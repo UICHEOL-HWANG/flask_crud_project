@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+{% block title %} Home {% endblock %}
+
+
+{% block body %} 
+
+<div class ="container">
+    <div class ="row">
+        <div class ="col-md-12">
+            <div class ="jumbotron p-3">
+                <h2>노예 <b>명단</b> <button type="button" class ="btn btn-success float-right" data-toggle="modal" data-target="#myModal">노예 추가</button> </h2>
+                {% with messages = get_flashed_messages() %} 
+                
+                {% if messages %} 
+
+                {% for message in messages %} 
+
+                <div class = "alert alert-success alert-dismissible" role="alert">
+                    <button type = "button" class ="close" data-dismiss="alert" aria-label="cloase">
+                        <span aria-hidden="true">x</span>
+                    </button>
+
+                <!-- 중복된 데이터 알리미 만들기-->
+
+                {{message}}
+                </div>
+
+                {% endfor %}
+
+                {% endif %}
+                {% endwith %} <!-- 인명 추가 메세지 생성 구문-->
+
+                <table class ="table table-hover table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>전화번호</th>
+                        <th>수정,삭제</th>
+
+                    </tr>
+                    
+                    {% for row in employees %} <!-- app.py에 상속을 위한 데이터베이스 구문-->
+                    <tr>
+                        <td>{{row.id}}</td>
+                        <td>{{row.name}}</td>
+                        <td>{{row.email}}</td>
+                        <td>{{row.number}}</td>
+                        
+                        <td>
+                            <a href="/update/{{row.id}}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{row.id}}">Edit</a>
+                            <!-- 수정을 할거냐 말거냐 박스-->
+                            <a href="/delete/{{row.id}}" class= "btn btn-danger btn-xs" onclick="return confirm('삭제하실래요?')">Delete</a>
+                            <!-- 삭제를 할거냐 말거냐 박스-->
+                        </td>
+                    </tr>
+
+
+<!-- 노예 정보 수정 칸 만들기-->                
+<div id ="modaledit{{row.id}}" class="modal fade" role="dialog">
+    <div class = "modal-dialog">
+        <div class ="modal-content">
+            <div class = "modal-header">
+                <h4 class ="modal-title">노예 정보 수정</h4>
+            </div>
+
+            <div class = "modal-body">
+                <form action="{{url_for('update')}}" method="post">
+                    <div class ="form-group">
+                        <label>이름:</label>
+                            <input type = "hidden" name="id" value="{{row.id}}">
+                        <input type ="text" class ="form-control" name = "name" value="{{row.name}}">
+                    </div>
+
+                    <div class ="form-group">
+                        <label>이메일</label>
+                        <input type="text" class ="form-control" name ="email" value="{{row.email}}">
+                    </div>
+
+                    <div class ="form-group">
+                        <label>전화번호</label>
+                        <input type="text" class ="form-control" name ="number" value="{{row.number}}">
+                    </div>
+                    <div class ="form-group">
+                        <button class ="btn btn-primary" type ="submit">수정</button>
+                    </div>
+                </form>
+            </div>
+            <div class ="modal-footer">
+                <button type ="button" class ="btn btn-secondary" data-dismiss="modal">닫기</button>
+            </div>
+        </div>
+    </div>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!--인명 추가 박스 만들기 -->
+<div id="myModal" class ="modal fade" role = "dialog">
+    <div class = "modal-dialog">
+        <div class ="modal-content">
+            <div class = "modal-header">
+                <h4 class="modal-title"> 노예추가</h4>
+            </div>
+
+            <div class ="modal-body">
+                <form action="{{url_for('insert')}}", method="POST">
+                    <div class = "form-group">
+                        <label>이름:</label>
+                        <input type = "text" class="form-control" name ="name" required="1">
+
+                    </div>
+
+                    <div class = "form-group">
+                        <label>이메일:</label>
+                        <input type = "email" class="form-control" name ="email" required="1">
+                    </div>
+                    <div class = "form-group">
+                        <label>전화번호</label>
+                        <input type = "number" class="form-control" name ="number" required="1">
+                    </div>
+                    <div class = "form-group">
+                        <button class ="btn btn-primary" type ="submit">노예 추가</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
